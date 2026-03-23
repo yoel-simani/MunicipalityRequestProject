@@ -73,9 +73,9 @@ function SelectField({ value, onChange, options, placeholder = 'בחר', disable
         disabled={disabled}
         onMouseDown={(e) => { e.stopPropagation(); setOpen((prev) => !prev); }}
         onKeyDown={handleKeyDown}
-        style={{ width: '100%', padding: '12px 40px 12px 12px', fontSize: '16px', border: hasError ? '2px solid #d32f2f' : '2px solid #ddd', borderRadius: '25px', textAlign: 'right', backgroundColor: disabled ? '#f5f5f5' : '#fff', color: disabled ? '#999' : '#333', cursor: disabled ? 'not-allowed' : 'pointer', outline: 'none', position: 'relative' }}
+        style={{ width: '100%', padding: '10px 36px 10px 10px', fontSize: '16px', border: hasError ? '1px solid #d32f2f' : '1px solid #ddd', borderRadius: '25px', textAlign: 'right', backgroundColor: disabled ? '#f5f5f5' : '#fff', color: disabled ? '#999' : '#333', cursor: disabled ? 'not-allowed' : 'pointer', outline: 'none', position: 'relative' }}
         onFocus={(e) => (e.currentTarget.style.borderColor = '#6a1b9a')}
-        onBlur={(e) => (e.currentTarget.style.borderColor = '#ddd')}
+        onBlur={(e) => (e.currentTarget.style.borderColor = hasError ? '#d32f2f' : '#ddd')}
       >
         {selectedLabel || placeholder}
         <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: '#666', pointerEvents: 'none', fontSize: '12px' }}>▼</span>
@@ -335,8 +335,8 @@ export default function TemplateFields({ initialData, selectedItem, municipality
       return (
         <div key={field.name} style={containerStyle}>
           {label}
-          <textarea ref={(el) => { fieldRefs.current[field.name] = el as HTMLElement | null; }} value={value} onChange={(e) => handleFieldChange(field.name, e.target.value)} rows={5} style={{ width: '100%', padding: '10px', fontSize: '20px', border: fieldErrors[field.name] ? '2px solid #d32f2f' : '1px solid #ddd', borderRadius: '4px', textAlign: 'right', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif' }} />
-          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '13px', marginTop: '6px' }}>{fieldErrors[field.name]}</div>}
+          <textarea ref={(el) => { fieldRefs.current[field.name] = el as HTMLElement | null; }} value={value} onChange={(e) => handleFieldChange(field.name, e.target.value)} rows={5} style={{ width: '100%', padding: '10px', fontSize: '14px', border: fieldErrors[field.name] ? '1px solid #d32f2f' : '1px solid #ddd', borderRadius: '4px', textAlign: 'right', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif' }} />
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -346,7 +346,7 @@ export default function TemplateFields({ initialData, selectedItem, municipality
         <div key={field.name} style={containerStyle}>
           {label}
           <SelectField hasError={!!fieldErrors[field.name]} inputRef={(el) => { fieldRefs.current[field.name] = el; }} value={String(value || '')} onChange={(next) => { const label = settlementOptions.find((opt) => opt.id === next)?.nameHebrew || ''; handleFieldChange(field.name, next, label); }} options={[{ value: '', label: 'בחר' }, ...(loadingSettlements ? [{ value: '__loading__', label: 'טוען...', disabled: true }] : settlementOptions.map((opt) => ({ value: opt.id, label: opt.nameHebrew })))]} />
-          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '13px', marginTop: '6px' }}>{fieldErrors[field.name]}</div>}
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -356,7 +356,7 @@ export default function TemplateFields({ initialData, selectedItem, municipality
         <div key={field.name} style={containerStyle}>
           {label}
           <SelectField hasError={!!fieldErrors[field.name]} inputRef={(el) => { fieldRefs.current[field.name] = el; }} value={String(value || '')} onChange={(next) => { const label = streetOptions.find((opt) => opt.id === next)?.nameHebrew || ''; handleFieldChange(field.name, next, label); }} disabled={!selectedSettlementId} options={[{ value: '', label: 'בחר' }, ...(loadingStreets ? [{ value: '__loading__', label: 'טוען...', disabled: true }] : streetOptions.map((opt) => ({ value: opt.id, label: opt.nameHebrew })))]} />
-          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '13px', marginTop: '6px' }}>{fieldErrors[field.name]}</div>}
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -366,7 +366,7 @@ export default function TemplateFields({ initialData, selectedItem, municipality
         <div key={field.name} style={containerStyle}>
           {label}
           <SelectField hasError={!!fieldErrors[field.name]} inputRef={(el) => { fieldRefs.current[field.name] = el; }} value={String(value || '')} onChange={(next) => { const label = appealReasonOptions.find((opt) => opt.key === next)?.value || ''; handleFieldChange(field.name, next, label); }} options={[{ value: '', label: 'בחר' }, ...(loadingAppealReasons ? [{ value: '__loading__', label: 'טוען...', disabled: true }] : appealReasonOptions.map((opt) => ({ value: opt.key, label: opt.value })))]} />
-          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '13px', marginTop: '6px' }}>{fieldErrors[field.name]}</div>}
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -379,7 +379,7 @@ export default function TemplateFields({ initialData, selectedItem, municipality
         <div key={field.name} style={containerStyle}>
           {label}
           <SelectField hasError={!!fieldErrors[field.name]} inputRef={(el) => { fieldRefs.current[field.name] = el; }} value={String(value || '')} onChange={(next) => { const label = tableOptions.find((opt) => opt.key === next)?.value || ''; handleFieldChange(field.name, next, label); }} options={[{ value: '', label: 'בחר' }, ...(loadingTable ? [{ value: '__loading__', label: 'טוען...', disabled: true }] : tableOptions.map((opt) => ({ value: opt.key, label: opt.value })))]} />
-          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '13px', marginTop: '6px' }}>{fieldErrors[field.name]}</div>}
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -389,7 +389,7 @@ export default function TemplateFields({ initialData, selectedItem, municipality
         <div key={field.name} style={containerStyle}>
           {label}
           <SelectField hasError={!!fieldErrors[field.name]} inputRef={(el) => { fieldRefs.current[field.name] = el; }} value={String(value || '')} onChange={(next) => { const label = field.options?.find((opt) => opt.value === next)?.label || ''; handleFieldChange(field.name, next, label); }} options={[{ value: '', label: 'בחר' }, ...(field.options || []).map((opt) => ({ value: opt.value, label: opt.label }))]} />
-          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '13px', marginTop: '6px' }}>{fieldErrors[field.name]}</div>}
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -401,7 +401,7 @@ export default function TemplateFields({ initialData, selectedItem, municipality
             <input ref={(el) => { fieldRefs.current[field.name] = el as HTMLElement | null; }} type="checkbox" checked={value === true} onChange={(e) => handleFieldChange(field.name, e.target.checked)} style={{ marginLeft: '8px' }} />
             {field.label} {isRequired && <span style={{ color: '#d32f2f' }}>*</span>}
           </label>
-          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '13px', marginTop: '6px' }}>{fieldErrors[field.name]}</div>}
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -409,8 +409,8 @@ export default function TemplateFields({ initialData, selectedItem, municipality
     return (
       <div key={field.name} style={containerStyle}>
         {label}
-        <input ref={(el) => { fieldRefs.current[field.name] = el as HTMLElement | null; }} type={field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : 'text'} value={value} onChange={(e) => handleFieldChange(field.name, e.target.value)} style={{ width: '100%', padding: '10px', fontSize: '14px', border: fieldErrors[field.name] ? '2px solid #d32f2f' : '1px solid #ddd', borderRadius: '4px', textAlign: 'right' }} />
-        {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '13px', marginTop: '6px' }}>{fieldErrors[field.name]}</div>}
+          <input ref={(el) => { fieldRefs.current[field.name] = el as HTMLElement | null; }} type={field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : 'text'} value={value} onChange={(e) => handleFieldChange(field.name, e.target.value)} style={{ width: '100%', padding: '10px', fontSize: '14px', border: fieldErrors[field.name] ? '1px solid #d32f2f' : '1px solid #ddd', borderRadius: '4px', textAlign: 'right' }} />
+        {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block' }}>{fieldErrors[field.name]}</div>}
       </div>
     );
   };
