@@ -144,7 +144,7 @@ export default function ApplicantDetailsForm({ onBack, onNext, initialData, iden
             }}
           />
           {errors.idNumber && (
-            <span style={{ color: 'red', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+            <span style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block', textAlign: 'right', fontFamily: 'Arial, sans-serif' }}>
               {errors.idNumber}
             </span>
           )}
@@ -178,7 +178,7 @@ export default function ApplicantDetailsForm({ onBack, onNext, initialData, iden
             }}
           />
           {errors.firstName && (
-            <span style={{ color: 'red', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+            <span style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block', textAlign: 'right', fontFamily: 'Arial, sans-serif' }}>
               {errors.firstName}
             </span>
           )}
@@ -212,7 +212,7 @@ export default function ApplicantDetailsForm({ onBack, onNext, initialData, iden
             }}
           />
           {errors.lastName && (
-            <span style={{ color: 'red', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+            <span style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block', textAlign: 'right', fontFamily: 'Arial, sans-serif' }}>
               {errors.lastName}
             </span>
           )}
@@ -246,7 +246,7 @@ export default function ApplicantDetailsForm({ onBack, onNext, initialData, iden
             }}
           />
           {errors.mobilePhone && (
-            <span style={{ color: 'red', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+            <span style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block', textAlign: 'right', fontFamily: 'Arial, sans-serif' }}>
               {errors.mobilePhone}
             </span>
           )}
@@ -309,7 +309,7 @@ export default function ApplicantDetailsForm({ onBack, onNext, initialData, iden
             }}
           />
           {errors.email && (
-            <span style={{ color: 'red', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+            <span style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block', textAlign: 'right', fontFamily: 'Arial, sans-serif' }}>
               {errors.email}
             </span>
           )}

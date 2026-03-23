@@ -73,7 +73,7 @@ function SelectField({ value, onChange, options, placeholder = 'בחר', disable
         disabled={disabled}
         onMouseDown={(e) => { e.stopPropagation(); setOpen((prev) => !prev); }}
         onKeyDown={handleKeyDown}
-        style={{ width: '100%', padding: '10px 36px 10px 10px', fontSize: '16px', border: hasError ? '1px solid #d32f2f' : '1px solid #ddd', borderRadius: '25px', textAlign: 'right', backgroundColor: disabled ? '#f5f5f5' : '#fff', color: disabled ? '#999' : '#333', cursor: disabled ? 'not-allowed' : 'pointer', outline: 'none', position: 'relative' }}
+        style={{ width: '100%', padding: '10px 36px 10px 10px', fontSize: '16px', fontFamily: 'Arial, sans-serif', border: hasError ? '1px solid #d32f2f' : '1px solid #ddd', borderRadius: '25px', textAlign: 'right', backgroundColor: disabled ? '#f5f5f5' : '#fff', color: disabled ? '#999' : '#333', cursor: disabled ? 'not-allowed' : 'pointer', outline: 'none', position: 'relative' }}
         onFocus={(e) => (e.currentTarget.style.borderColor = '#6a1b9a')}
         onBlur={(e) => (e.currentTarget.style.borderColor = hasError ? '#d32f2f' : '#ddd')}
       >
@@ -328,7 +328,7 @@ export default function TemplateFields({ initialData, selectedItem, municipality
     if (options?.maxWidth) containerStyle.maxWidth = options.maxWidth;
 
     const label = (
-      <label style={{ display: 'block', marginBottom: '6px', fontSize: '14px', fontWeight: 'bold', color: '#333' }}>{field.label} {isRequired && <span style={{ color: '#d32f2f' }}>*</span>}</label>
+      <label style={{ display: 'block', marginBottom: '6px', fontSize: '14px', fontWeight: 'bold', color: '#333', textAlign: 'right', fontFamily: 'Arial, sans-serif' }}>{field.label} {isRequired && <span style={{ color: '#d32f2f' }}>*</span>}</label>
     );
 
     if (field.type === 'textarea') {
@@ -336,7 +336,7 @@ export default function TemplateFields({ initialData, selectedItem, municipality
         <div key={field.name} style={containerStyle}>
           {label}
           <textarea ref={(el) => { fieldRefs.current[field.name] = el as HTMLElement | null; }} value={value} onChange={(e) => handleFieldChange(field.name, e.target.value)} rows={5} style={{ width: '100%', padding: '10px', fontSize: '14px', border: fieldErrors[field.name] ? '1px solid #d32f2f' : '1px solid #ddd', borderRadius: '4px', textAlign: 'right', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif' }} />
-          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block' }}>{fieldErrors[field.name]}</div>}
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block', textAlign: 'right', fontFamily: 'Arial, sans-serif' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -346,7 +346,7 @@ export default function TemplateFields({ initialData, selectedItem, municipality
         <div key={field.name} style={containerStyle}>
           {label}
           <SelectField hasError={!!fieldErrors[field.name]} inputRef={(el) => { fieldRefs.current[field.name] = el; }} value={String(value || '')} onChange={(next) => { const label = settlementOptions.find((opt) => opt.id === next)?.nameHebrew || ''; handleFieldChange(field.name, next, label); }} options={[{ value: '', label: 'בחר' }, ...(loadingSettlements ? [{ value: '__loading__', label: 'טוען...', disabled: true }] : settlementOptions.map((opt) => ({ value: opt.id, label: opt.nameHebrew })))]} />
-          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block' }}>{fieldErrors[field.name]}</div>}
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block', textAlign: 'right', fontFamily: 'Arial, sans-serif' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -356,7 +356,7 @@ export default function TemplateFields({ initialData, selectedItem, municipality
         <div key={field.name} style={containerStyle}>
           {label}
           <SelectField hasError={!!fieldErrors[field.name]} inputRef={(el) => { fieldRefs.current[field.name] = el; }} value={String(value || '')} onChange={(next) => { const label = streetOptions.find((opt) => opt.id === next)?.nameHebrew || ''; handleFieldChange(field.name, next, label); }} disabled={!selectedSettlementId} options={[{ value: '', label: 'בחר' }, ...(loadingStreets ? [{ value: '__loading__', label: 'טוען...', disabled: true }] : streetOptions.map((opt) => ({ value: opt.id, label: opt.nameHebrew })))]} />
-          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block' }}>{fieldErrors[field.name]}</div>}
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block', textAlign: 'right', fontFamily: 'Arial, sans-serif' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -366,7 +366,7 @@ export default function TemplateFields({ initialData, selectedItem, municipality
         <div key={field.name} style={containerStyle}>
           {label}
           <SelectField hasError={!!fieldErrors[field.name]} inputRef={(el) => { fieldRefs.current[field.name] = el; }} value={String(value || '')} onChange={(next) => { const label = appealReasonOptions.find((opt) => opt.key === next)?.value || ''; handleFieldChange(field.name, next, label); }} options={[{ value: '', label: 'בחר' }, ...(loadingAppealReasons ? [{ value: '__loading__', label: 'טוען...', disabled: true }] : appealReasonOptions.map((opt) => ({ value: opt.key, label: opt.value })))]} />
-          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block' }}>{fieldErrors[field.name]}</div>}
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block', textAlign: 'right', fontFamily: 'Arial, sans-serif' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -379,7 +379,7 @@ export default function TemplateFields({ initialData, selectedItem, municipality
         <div key={field.name} style={containerStyle}>
           {label}
           <SelectField hasError={!!fieldErrors[field.name]} inputRef={(el) => { fieldRefs.current[field.name] = el; }} value={String(value || '')} onChange={(next) => { const label = tableOptions.find((opt) => opt.key === next)?.value || ''; handleFieldChange(field.name, next, label); }} options={[{ value: '', label: 'בחר' }, ...(loadingTable ? [{ value: '__loading__', label: 'טוען...', disabled: true }] : tableOptions.map((opt) => ({ value: opt.key, label: opt.value })))]} />
-          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block' }}>{fieldErrors[field.name]}</div>}
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block', textAlign: 'right', fontFamily: 'Arial, sans-serif' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -389,7 +389,7 @@ export default function TemplateFields({ initialData, selectedItem, municipality
         <div key={field.name} style={containerStyle}>
           {label}
           <SelectField hasError={!!fieldErrors[field.name]} inputRef={(el) => { fieldRefs.current[field.name] = el; }} value={String(value || '')} onChange={(next) => { const label = field.options?.find((opt) => opt.value === next)?.label || ''; handleFieldChange(field.name, next, label); }} options={[{ value: '', label: 'בחר' }, ...(field.options || []).map((opt) => ({ value: opt.value, label: opt.label }))]} />
-          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block' }}>{fieldErrors[field.name]}</div>}
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block', textAlign: 'right', fontFamily: 'Arial, sans-serif' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -397,11 +397,11 @@ export default function TemplateFields({ initialData, selectedItem, municipality
     if (field.type === 'checkbox') {
       return (
         <div key={field.name} style={containerStyle}>
-          <label style={{ fontSize: '14px', fontWeight: 'bold', color: fieldErrors[field.name] ? '#d32f2f' : '#333' }}>
-            <input ref={(el) => { fieldRefs.current[field.name] = el as HTMLElement | null; }} type="checkbox" checked={value === true} onChange={(e) => handleFieldChange(field.name, e.target.checked)} style={{ marginLeft: '8px' }} />
+          <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: fieldErrors[field.name] ? '#d32f2f' : '#333', textAlign: 'right', fontFamily: 'Arial, sans-serif' }}>
+            <input ref={(el) => { fieldRefs.current[field.name] = el as HTMLElement | null; }} type="checkbox" checked={value === true} onChange={(e) => handleFieldChange(field.name, e.target.checked)} style={{ marginRight: '8px' }} />
             {field.label} {isRequired && <span style={{ color: '#d32f2f' }}>*</span>}
           </label>
-          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block' }}>{fieldErrors[field.name]}</div>}
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block', textAlign: 'right', fontFamily: 'Arial, sans-serif' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -409,8 +409,8 @@ export default function TemplateFields({ initialData, selectedItem, municipality
     return (
       <div key={field.name} style={containerStyle}>
         {label}
-          <input ref={(el) => { fieldRefs.current[field.name] = el as HTMLElement | null; }} type={field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : 'text'} value={value} onChange={(e) => handleFieldChange(field.name, e.target.value)} style={{ width: '100%', padding: '10px', fontSize: '14px', border: fieldErrors[field.name] ? '1px solid #d32f2f' : '1px solid #ddd', borderRadius: '4px', textAlign: 'right' }} />
-        {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block' }}>{fieldErrors[field.name]}</div>}
+          <input ref={(el) => { fieldRefs.current[field.name] = el as HTMLElement | null; }} type={field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : 'text'} value={value} onChange={(e) => handleFieldChange(field.name, e.target.value)} style={{ width: '100%', padding: '10px', fontSize: '14px', fontFamily: 'Arial, sans-serif', border: fieldErrors[field.name] ? '1px solid #d32f2f' : '1px solid #ddd', borderRadius: '4px', textAlign: 'right' }} />
+        {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'block', textAlign: 'right', fontFamily: 'Arial, sans-serif' }}>{fieldErrors[field.name]}</div>}
       </div>
     );
   };
@@ -432,6 +432,15 @@ export default function TemplateFields({ initialData, selectedItem, municipality
       } else {
         if (val === undefined || val === null || String(val).trim() === '' || String(val) === '__loading__') {
           newFieldErrors[f.name] = 'שדה חובה';
+        } else if (f.type === 'number' || /mispar|bayit|number/i.test(f.name)) {
+          const str = String(val).trim();
+          // allow numeric values only
+          if (!/^[0-9]+$/.test(str)) {
+            // specific message for house-number-like fields
+            const lname = (f.label || '').toLowerCase();
+            if (lname.includes('מספר בית') || /bayit|mispar/i.test(f.name)) newFieldErrors[f.name] = 'מספר בית לא תקין';
+            else newFieldErrors[f.name] = 'מספר לא תקין';
+          }
         } else if (f.validation?.minLength && typeof val === 'string' && val.trim().length < (f.validation.minLength || 0)) {
           newFieldErrors[f.name] = `מינימום ${f.validation.minLength}`;
         }
@@ -460,7 +469,7 @@ export default function TemplateFields({ initialData, selectedItem, municipality
   const renderAddressField = (field?: TemplateFieldConfig, maxWidth?: string) => field ? (<div style={{ minWidth: 0, width: '100%', maxWidth: maxWidth || 'none' }}>{renderField(field)}</div>) : null;
 
   return (
-    <div dir="rtl" lang="he" style={{ padding: '10px 12px 20px', width: '100%', boxSizing: 'border-box', margin: 0 }}>
+    <div dir="rtl" lang="he" style={{ padding: '10px 12px 20px', width: '100%', boxSizing: 'border-box', margin: 0, fontFamily: 'Arial, sans-serif' }}>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '24px' }}>
           {otherFields.map((field) => renderField(field, { compact: true, maxWidth: ['isVehicleOwner', 'cmbSibatIrur'].includes(field.name) ? '780px' : undefined, marginTop: field.name === 'cmbSibatIrur' ? '6px' : undefined }))}
