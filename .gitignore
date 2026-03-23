@@ -1,0 +1,47 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+package-lock.json
+
+# Vite / build
+dist/
+build/
+.public/
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Env and secrets
+.env
+.env.*.local
+secrets/
+
+# Backups
+%USERPROFILE%/REACT-Workspace-backups/
+REACT-Workspace-backups/
+
+# Frontend builds
+municipality-ui/build/
+react-frontend/build/
+
+# Misc
+coverage/
+.cache/
+
+# Backup script output
+scripts/**/REACT-Workspace-backups/

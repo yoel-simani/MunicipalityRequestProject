@@ -1,0 +1,246 @@
+body {
+  direction: rtl;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-link.active {
+  color: #0d6efd;
+  background-color: #e7f1ff !important;
+  border-radius: 6px;
+}
+
+.sidebar-open .nav-link:hover {
+  background-color: #f1f5fb;
+}
+
+.table {
+  background-color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.table thead th {
+  font-weight: 600;
+  color: #333;
+  background-color: #e7f1ff !important; /* תכלת בהיר */
+}
+.table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.form-select {
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  padding: 0.5rem 2rem 0.5rem 0.5rem; /* ריווח שמאלי מוגדל כדי למנוע חפיפה של החץ */
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  background-color: #ffffff !important;
+  outline: none;
+  color: #333 !important;
+}
+.form-control,
+.form-control-sm,
+.react-datepicker__input-container input {
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  padding: 0.5rem;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  background-color: #ffffff !important;
+  outline: none;
+  color: #333 !important;
+}
+
+.form-select:focus,
+.form-control:focus,
+.form-control-sm:focus,
+.react-datepicker__input-container input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.form-control-sm {
+  background-color: #ffffff !important;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.react-select__control {
+  background-color: #ffffff !important;
+  border: 1px solid #ced4da !important;
+  border-radius: 6px;
+  padding: 0.1rem 0.2rem;
+}
+
+.react-select__control--is-focused {
+  border-color: #007bff !important;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5) !important;
+}
+
+.react-select__single-value {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  border: none;
+  padding: 0;
+  background: transparent;
+  outline: none;
+  color: #333 !important;
+}
+
+.react-select__menu {
+  direction: rtl;
+  border: none !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+.react-select__option {
+  padding: 0.5rem 1rem;
+  text-align: right;
+  border-bottom: 1px solid #eee;
+}
+
+.react-select__option:last-child {
+  border-bottom: none;
+}
+
+.pagination .page-link {
+  border-radius: 4px;
+  margin: 0 2px;
+}
+
+.alert-info {
+  border-radius: 6px;
+  margin-top: 1rem;
+}
+
+.form-label {
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+  display: block;
+  text-align: right;
+}
+
+.react-datepicker__input-container {
+  display: block !important;
+}
+
+.btn-primary {
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+}
+
+.spinner-border-sm {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-width: 0.2em;
+}
+
+.hourglass-spinner {
+  display: inline-block;
+  width: 1.2rem;
+  height: 1.2rem;
+  position: relative;
+  animation: hourglass 1.2s infinite linear;
+}
+
+.hourglass-spinner::before,
+.hourglass-spinner::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 0.6rem solid transparent;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+.hourglass-spinner::before {
+  border-bottom-color: #fff;
+  top: 0;
+  animation: hourglass-top 1.2s infinite linear;
+}
+
+.hourglass-spinner::after {
+  border-top-color: #fff;
+  bottom: 0;
+  animation: hourglass-bottom 1.2s infinite linear;
+}
+
+@keyframes hourglass {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
+}
+
+@keyframes hourglass-top {
+  0% {
+    border-bottom-width: 0.6rem;
+    opacity: 1;
+  }
+  50% {
+    border-bottom-width: 0;
+    opacity: 0.5;
+  }
+  100% {
+    border-bottom-width: 0.6rem;
+    opacity: 1;
+  }
+}
+
+@keyframes hourglass-bottom {
+  0% {
+    border-top-width: 0.6rem;
+    opacity: 1;
+  }
+  50% {
+    border-top-width: 0;
+    opacity: 0.5;
+  }
+  100% {
+    border-top-width: 0.6rem;
+    opacity: 1;
+  }
+}
+
+/* סיבוב מלמעלה למטה (ציר X) */
+.spin-top-bottom {
+  animation: spinTopBottom 0.8s linear;
+}
+
+@keyframes spinTopBottom {
+  0% {
+    transform: rotateX(0deg);
+  }
+  100% {
+    transform: rotateX(360deg);
+  }
+}
+
+/* סיבוב משמאל לימין (ציר Y) */
+.spin-left-right {
+  animation: spinLeftRight 0.8s linear;
+}
+
+@keyframes spinLeftRight {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(360deg);
+  }
+}
