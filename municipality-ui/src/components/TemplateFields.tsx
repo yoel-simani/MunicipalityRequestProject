@@ -11,7 +11,7 @@ let cachedAppealReasonsByTable = new Map<string, { key: string; value: string }[
 let cachedTableOptionsById = new Map<string, { key: string; value: string }[]>();
 
 // Standalone SelectField component moved to module scope to avoid remounting on parent renders
-function SelectField({ value, onChange, options, placeholder = 'בחר', disabled = false }: { value: string; onChange: (next: string) => void; options: { value: string; label: string; disabled?: boolean }[]; placeholder?: string; disabled?: boolean; }) {
+function SelectField({ value, onChange, options, placeholder = 'בחר', disabled = false, inputRef, hasError = false }: { value: string; onChange: (next: string) => void; options: { value: string; label: string; disabled?: boolean }[]; placeholder?: string; disabled?: boolean; inputRef?: (el: HTMLElement | null) => void; hasError?: boolean; }) {
   const [open, setOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -67,13 +67,13 @@ function SelectField({ value, onChange, options, placeholder = 'בחר', disable
   };
 
   return (
-    <div ref={wrapperRef} style={{ position: 'relative', width: '100%' }}>
+  <div ref={(el) => { wrapperRef.current = el; if (inputRef) inputRef(el); }} style={{ position: 'relative', width: '100%' }}>
       <button
         type="button"
         disabled={disabled}
         onMouseDown={(e) => { e.stopPropagation(); setOpen((prev) => !prev); }}
         onKeyDown={handleKeyDown}
-        style={{ width: '100%', padding: '12px 40px 12px 12px', fontSize: '16px', border: '2px solid #ddd', borderRadius: '25px', textAlign: 'right', backgroundColor: disabled ? '#f5f5f5' : '#fff', color: disabled ? '#999' : '#333', cursor: disabled ? 'not-allowed' : 'pointer', outline: 'none', position: 'relative' }}
+        style={{ width: '100%', padding: '12px 40px 12px 12px', fontSize: '16px', border: hasError ? '2px solid #d32f2f' : '2px solid #ddd', borderRadius: '25px', textAlign: 'right', backgroundColor: disabled ? '#f5f5f5' : '#fff', color: disabled ? '#999' : '#333', cursor: disabled ? 'not-allowed' : 'pointer', outline: 'none', position: 'relative' }}
         onFocus={(e) => (e.currentTarget.style.borderColor = '#6a1b9a')}
         onBlur={(e) => (e.currentTarget.style.borderColor = '#ddd')}
       >
@@ -141,7 +141,8 @@ export default function TemplateFields({ initialData, selectedItem, municipality
   const [loadingSettlements, setLoadingSettlements] = useState(false);
   const [loadingStreets, setLoadingStreets] = useState(false);
   const [loadingAppealReasons, setLoadingAppealReasons] = useState(false);
-  const [error, setError] = useState<string>('');
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+    const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
   const lastStreetsRashutId = useRef<string | null>(null);
 
   const getSettlement = (settlementId: string) => settlementOptions.find((opt) => opt.id === settlementId);
@@ -334,7 +335,8 @@ export default function TemplateFields({ initialData, selectedItem, municipality
       return (
         <div key={field.name} style={containerStyle}>
           {label}
-          <textarea value={value} onChange={(e) => handleFieldChange(field.name, e.target.value)} rows={5} style={{ width: '100%', padding: '10px', fontSize: '20px', border: '1px solid #ddd', borderRadius: '4px', textAlign: 'right', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif' }} />
+          <textarea ref={(el) => { fieldRefs.current[field.name] = el as HTMLElement | null; }} value={value} onChange={(e) => handleFieldChange(field.name, e.target.value)} rows={5} style={{ width: '100%', padding: '10px', fontSize: '20px', border: fieldErrors[field.name] ? '2px solid #d32f2f' : '1px solid #ddd', borderRadius: '4px', textAlign: 'right', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif' }} />
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '13px', marginTop: '6px' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -343,7 +345,8 @@ export default function TemplateFields({ initialData, selectedItem, municipality
       return (
         <div key={field.name} style={containerStyle}>
           {label}
-          <SelectField value={String(value || '')} onChange={(next) => { const label = settlementOptions.find((opt) => opt.id === next)?.nameHebrew || ''; handleFieldChange(field.name, next, label); }} options={[{ value: '', label: 'בחר' }, ...(loadingSettlements ? [{ value: '__loading__', label: 'טוען...', disabled: true }] : settlementOptions.map((opt) => ({ value: opt.id, label: opt.nameHebrew })))]} />
+          <SelectField hasError={!!fieldErrors[field.name]} inputRef={(el) => { fieldRefs.current[field.name] = el; }} value={String(value || '')} onChange={(next) => { const label = settlementOptions.find((opt) => opt.id === next)?.nameHebrew || ''; handleFieldChange(field.name, next, label); }} options={[{ value: '', label: 'בחר' }, ...(loadingSettlements ? [{ value: '__loading__', label: 'טוען...', disabled: true }] : settlementOptions.map((opt) => ({ value: opt.id, label: opt.nameHebrew })))]} />
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '13px', marginTop: '6px' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -352,7 +355,8 @@ export default function TemplateFields({ initialData, selectedItem, municipality
       return (
         <div key={field.name} style={containerStyle}>
           {label}
-          <SelectField value={String(value || '')} onChange={(next) => { const label = streetOptions.find((opt) => opt.id === next)?.nameHebrew || ''; handleFieldChange(field.name, next, label); }} disabled={!selectedSettlementId} options={[{ value: '', label: 'בחר' }, ...(loadingStreets ? [{ value: '__loading__', label: 'טוען...', disabled: true }] : streetOptions.map((opt) => ({ value: opt.id, label: opt.nameHebrew })))]} />
+          <SelectField hasError={!!fieldErrors[field.name]} inputRef={(el) => { fieldRefs.current[field.name] = el; }} value={String(value || '')} onChange={(next) => { const label = streetOptions.find((opt) => opt.id === next)?.nameHebrew || ''; handleFieldChange(field.name, next, label); }} disabled={!selectedSettlementId} options={[{ value: '', label: 'בחר' }, ...(loadingStreets ? [{ value: '__loading__', label: 'טוען...', disabled: true }] : streetOptions.map((opt) => ({ value: opt.id, label: opt.nameHebrew })))]} />
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '13px', marginTop: '6px' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -361,7 +365,8 @@ export default function TemplateFields({ initialData, selectedItem, municipality
       return (
         <div key={field.name} style={containerStyle}>
           {label}
-          <SelectField value={String(value || '')} onChange={(next) => { const label = appealReasonOptions.find((opt) => opt.key === next)?.value || ''; handleFieldChange(field.name, next, label); }} options={[{ value: '', label: 'בחר' }, ...(loadingAppealReasons ? [{ value: '__loading__', label: 'טוען...', disabled: true }] : appealReasonOptions.map((opt) => ({ value: opt.key, label: opt.value })))]} />
+          <SelectField hasError={!!fieldErrors[field.name]} inputRef={(el) => { fieldRefs.current[field.name] = el; }} value={String(value || '')} onChange={(next) => { const label = appealReasonOptions.find((opt) => opt.key === next)?.value || ''; handleFieldChange(field.name, next, label); }} options={[{ value: '', label: 'בחר' }, ...(loadingAppealReasons ? [{ value: '__loading__', label: 'טוען...', disabled: true }] : appealReasonOptions.map((opt) => ({ value: opt.key, label: opt.value })))]} />
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '13px', marginTop: '6px' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -373,7 +378,8 @@ export default function TemplateFields({ initialData, selectedItem, municipality
       return (
         <div key={field.name} style={containerStyle}>
           {label}
-          <SelectField value={String(value || '')} onChange={(next) => { const label = tableOptions.find((opt) => opt.key === next)?.value || ''; handleFieldChange(field.name, next, label); }} options={[{ value: '', label: 'בחר' }, ...(loadingTable ? [{ value: '__loading__', label: 'טוען...', disabled: true }] : tableOptions.map((opt) => ({ value: opt.key, label: opt.value })))]} />
+          <SelectField hasError={!!fieldErrors[field.name]} inputRef={(el) => { fieldRefs.current[field.name] = el; }} value={String(value || '')} onChange={(next) => { const label = tableOptions.find((opt) => opt.key === next)?.value || ''; handleFieldChange(field.name, next, label); }} options={[{ value: '', label: 'בחר' }, ...(loadingTable ? [{ value: '__loading__', label: 'טוען...', disabled: true }] : tableOptions.map((opt) => ({ value: opt.key, label: opt.value })))]} />
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '13px', marginTop: '6px' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -382,7 +388,8 @@ export default function TemplateFields({ initialData, selectedItem, municipality
       return (
         <div key={field.name} style={containerStyle}>
           {label}
-          <SelectField value={String(value || '')} onChange={(next) => { const label = field.options?.find((opt) => opt.value === next)?.label || ''; handleFieldChange(field.name, next, label); }} options={[{ value: '', label: 'בחר' }, ...(field.options || []).map((opt) => ({ value: opt.value, label: opt.label }))]} />
+          <SelectField hasError={!!fieldErrors[field.name]} inputRef={(el) => { fieldRefs.current[field.name] = el; }} value={String(value || '')} onChange={(next) => { const label = field.options?.find((opt) => opt.value === next)?.label || ''; handleFieldChange(field.name, next, label); }} options={[{ value: '', label: 'בחר' }, ...(field.options || []).map((opt) => ({ value: opt.value, label: opt.label }))]} />
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '13px', marginTop: '6px' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -390,10 +397,11 @@ export default function TemplateFields({ initialData, selectedItem, municipality
     if (field.type === 'checkbox') {
       return (
         <div key={field.name} style={containerStyle}>
-          <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#333' }}>
-            <input type="checkbox" checked={value === true} onChange={(e) => handleFieldChange(field.name, e.target.checked)} style={{ marginLeft: '8px' }} />
+          <label style={{ fontSize: '14px', fontWeight: 'bold', color: fieldErrors[field.name] ? '#d32f2f' : '#333' }}>
+            <input ref={(el) => { fieldRefs.current[field.name] = el as HTMLElement | null; }} type="checkbox" checked={value === true} onChange={(e) => handleFieldChange(field.name, e.target.checked)} style={{ marginLeft: '8px' }} />
             {field.label} {isRequired && <span style={{ color: '#d32f2f' }}>*</span>}
           </label>
+          {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '13px', marginTop: '6px' }}>{fieldErrors[field.name]}</div>}
         </div>
       );
     }
@@ -401,7 +409,8 @@ export default function TemplateFields({ initialData, selectedItem, municipality
     return (
       <div key={field.name} style={containerStyle}>
         {label}
-        <input type={field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : 'text'} value={value} onChange={(e) => handleFieldChange(field.name, e.target.value)} style={{ width: '100%', padding: '10px', fontSize: '14px', border: '1px solid #ddd', borderRadius: '4px', textAlign: 'right' }} />
+        <input ref={(el) => { fieldRefs.current[field.name] = el as HTMLElement | null; }} type={field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : 'text'} value={value} onChange={(e) => handleFieldChange(field.name, e.target.value)} style={{ width: '100%', padding: '10px', fontSize: '14px', border: fieldErrors[field.name] ? '2px solid #d32f2f' : '1px solid #ddd', borderRadius: '4px', textAlign: 'right' }} />
+        {fieldErrors[field.name] && <div style={{ color: '#d32f2f', fontSize: '13px', marginTop: '6px' }}>{fieldErrors[field.name]}</div>}
       </div>
     );
   };
@@ -414,31 +423,37 @@ export default function TemplateFields({ initialData, selectedItem, municipality
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Validate required fields
-    const missing: string[] = [];
+    const newFieldErrors: Record<string, string> = {};
     templateFields.forEach((f) => {
       if (!f.visible || !f.required) return;
       const val = formData.fields?.[f.name];
       if (f.type === 'checkbox') {
-        if (val !== true) missing.push(f.label);
+        if (val !== true) newFieldErrors[f.name] = 'שדה חובה';
       } else {
         if (val === undefined || val === null || String(val).trim() === '' || String(val) === '__loading__') {
-          missing.push(f.label);
-        }
-        if (f.validation?.minLength && typeof val === 'string' && val.trim().length < (f.validation.minLength || 0)) {
-          missing.push(f.label + ` (מינימום ${f.validation.minLength})`);
+          newFieldErrors[f.name] = 'שדה חובה';
+        } else if (f.validation?.minLength && typeof val === 'string' && val.trim().length < (f.validation.minLength || 0)) {
+          newFieldErrors[f.name] = `מינימום ${f.validation.minLength}`;
         }
       }
     });
 
-    if (missing.length > 0) {
-      setError('יש למלא שדות חובה: ' + Array.from(new Set(missing)).join(', '));
+    if (Object.keys(newFieldErrors).length > 0) {
+      setFieldErrors(newFieldErrors);
+      // focus first missing field
+      const firstMissing = templateFields.find((f) => !!newFieldErrors[f.name]);
+      if (firstMissing) {
+        const refEl = fieldRefs.current[firstMissing.name];
+        if (refEl && typeof (refEl as HTMLElement).focus === 'function') {
+          (refEl as HTMLElement).focus();
+        }
+      }
       // scroll to top of the form to show the error
       const el = document.querySelector('[dir="rtl"] form');
       if (el) (el as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
-
-    setError('');
+    setFieldErrors({});
     onNext({ additionalDetails: '', fields: formData.fields });
   };
 
@@ -447,9 +462,6 @@ export default function TemplateFields({ initialData, selectedItem, municipality
   return (
     <div dir="rtl" lang="he" style={{ padding: '10px 12px 20px', width: '100%', boxSizing: 'border-box', margin: 0 }}>
       <form onSubmit={handleSubmit}>
-        {error && (
-          <div style={{ backgroundColor: '#ffebee', color: '#c62828', padding: '12px', borderRadius: '6px', marginBottom: '16px', border: '1px solid #ffcdd2', textAlign: 'center', fontWeight: 'bold' }}>{error}</div>
-        )}
         <div style={{ marginBottom: '24px' }}>
           {otherFields.map((field) => renderField(field, { compact: true, maxWidth: ['isVehicleOwner', 'cmbSibatIrur'].includes(field.name) ? '780px' : undefined, marginTop: field.name === 'cmbSibatIrur' ? '6px' : undefined }))}
           {addressFields.length > 0 && (
