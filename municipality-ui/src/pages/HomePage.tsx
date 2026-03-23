@@ -456,12 +456,19 @@ export default function HomePage() {
                     selectedItem={selectedItem}
                     municipalityId={municipalityId}
                     onBack={() => setCurrentView('applicantDetails')}
-                    onNext={(data) => {
-                      setRequestDetailsData({
-                        additionalDetails: requestDetailsData?.additionalDetails || '',
-                        selectedTav: requestDetailsData?.selectedTav,
+                    onSave={(data) => {
+                      setRequestDetailsData((prev) => ({
+                        additionalDetails: prev?.additionalDetails ?? '',
+                        selectedTav: prev?.selectedTav,
                         fields: data.fields
-                      });
+                      }));
+                    }}
+                    onNext={(data) => {
+                      setRequestDetailsData((prev) => ({
+                        additionalDetails: prev?.additionalDetails ?? '',
+                        selectedTav: prev?.selectedTav,
+                        fields: data.fields
+                      }));
                       setCurrentView('requestDetails');
                     }}
                   />
@@ -476,8 +483,10 @@ export default function HomePage() {
               <div style={{ marginTop: '20px' }}>
                 <RequestDetailsForm
                   requireAdditionalDetails={isPattern12}
-                  onBack={() => setCurrentView('templateDescription')}
-                  onNext={(data) => {
+                    onBack={() => setCurrentView('templateDescription')}
+                    initialAdditionalDetails={requestDetailsData?.additionalDetails || ''}
+                    initialFields={requestDetailsData?.fields || {}}
+                    onNext={(data) => {
                     console.log('Request details:', data);
                     setRequestDetailsData({
                       ...data,

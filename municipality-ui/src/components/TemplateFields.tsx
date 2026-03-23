@@ -10,15 +10,97 @@ const cachedStreetsByRashut = new Map<string, { id: string; nameHebrew: string; 
 let cachedAppealReasonsByTable = new Map<string, { key: string; value: string }[]>();
 let cachedTableOptionsById = new Map<string, { key: string; value: string }[]>();
 
+// Standalone SelectField component moved to module scope to avoid remounting on parent renders
+function SelectField({ value, onChange, options, placeholder = 'בחר', disabled = false }: { value: string; onChange: (next: string) => void; options: { value: string; label: string; disabled?: boolean }[]; placeholder?: string; disabled?: boolean; }) {
+  const [open, setOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const optionRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const searchRef = useRef<{ value: string; timeout?: number }>({ value: '' });
+
+  useEffect(() => {
+    if (!open) return;
+    const handleClick = (event: MouseEvent) => { if (!wrapperRef.current?.contains(event.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [open]);
+
+  useEffect(() => { if (!open) return; const selectedIndex = options.findIndex((opt) => opt.value === value); setHighlightedIndex(selectedIndex); }, [open, value]);
+
+  useEffect(() => {
+    if (!open || highlightedIndex < 0) return;
+    const el = optionRefs.current[highlightedIndex];
+    if (el && listRef.current) {
+      const { top, bottom } = el.getBoundingClientRect();
+      const listRect = listRef.current.getBoundingClientRect();
+      if (top < listRect.top || bottom > listRect.bottom) el.scrollIntoView({ block: 'nearest' });
+    }
+  }, [open, highlightedIndex]);
+
+  const selectedLabel = options.find((opt) => opt.value === value)?.label || '';
+  const enabledIndexes = options.map((opt, idx) => (opt.disabled ? -1 : idx)).filter((idx) => idx !== -1);
+  const moveHighlight = (direction: 1 | -1) => {
+    if (enabledIndexes.length === 0) return;
+    const current = highlightedIndex; const currentPos = enabledIndexes.indexOf(current);
+    const nextPos = currentPos === -1 ? (direction === 1 ? 0 : enabledIndexes.length - 1) : (currentPos + direction + enabledIndexes.length) % enabledIndexes.length;
+    setHighlightedIndex(enabledIndexes[nextPos]);
+  };
+
+  const handleTypeahead = (char: string) => {
+    const nextValue = `${searchRef.current.value}${char}`;
+    searchRef.current.value = nextValue;
+    if (searchRef.current.timeout) window.clearTimeout(searchRef.current.timeout);
+    searchRef.current.timeout = window.setTimeout(() => { searchRef.current.value = ''; }, 500);
+    const lower = nextValue.toLowerCase();
+    const matchIndex = options.findIndex((opt) => !opt.disabled && opt.label.toLowerCase().startsWith(lower));
+    if (matchIndex !== -1) setHighlightedIndex(matchIndex);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (disabled) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); if (!open) setOpen(true); moveHighlight(1); return; }
+    if (e.key === 'ArrowUp') { e.preventDefault(); if (!open) setOpen(true); moveHighlight(-1); return; }
+    if (e.key === 'Enter') { if (open && highlightedIndex >= 0) { e.preventDefault(); const opt = options[highlightedIndex]; if (opt && !opt.disabled) { onChange(opt.value); setOpen(false); } } return; }
+    if (e.key === 'Escape') { if (open) { e.preventDefault(); setOpen(false); } return; }
+    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) { if (!open) setOpen(true); handleTypeahead(e.key); }
+  };
+
+  return (
+    <div ref={wrapperRef} style={{ position: 'relative', width: '100%' }}>
+      <button
+        type="button"
+        disabled={disabled}
+        onMouseDown={(e) => { e.stopPropagation(); setOpen((prev) => !prev); }}
+        onKeyDown={handleKeyDown}
+        style={{ width: '100%', padding: '12px 40px 12px 12px', fontSize: '16px', border: '2px solid #ddd', borderRadius: '25px', textAlign: 'right', backgroundColor: disabled ? '#f5f5f5' : '#fff', color: disabled ? '#999' : '#333', cursor: disabled ? 'not-allowed' : 'pointer', outline: 'none', position: 'relative' }}
+        onFocus={(e) => (e.currentTarget.style.borderColor = '#6a1b9a')}
+        onBlur={(e) => (e.currentTarget.style.borderColor = '#ddd')}
+      >
+        {selectedLabel || placeholder}
+        <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: '#666', pointerEvents: 'none', fontSize: '12px' }}>▼</span>
+      </button>
+      {open && !disabled && (
+        <div ref={listRef} style={{ position: 'absolute', top: '100%', right: 0, left: 0, marginTop: '6px', backgroundColor: '#fff', border: '1px solid #ddd', borderRadius: '18px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', maxHeight: '260px', overflowY: 'auto', zIndex: 9999, pointerEvents: 'auto' }}>
+          {options.map((opt, idx) => (
+            <div key={`${opt.value}-${idx}`} ref={(el) => { optionRefs.current[idx] = el; }} onClick={() => { if (opt.disabled) return; onChange(opt.value); setOpen(false); }} onMouseEnter={() => setHighlightedIndex(idx)} style={{ padding: '10px 16px', cursor: opt.disabled ? 'not-allowed' : 'pointer', color: opt.disabled ? '#999' : '#333', backgroundColor: idx === highlightedIndex ? '#f3e5f5' : 'transparent', borderBottom: idx === options.length - 1 ? 'none' : '1px solid #eee' }}>{opt.label}</div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface TemplateFieldsProps {
   initialData?: RequestDetails | null;
   selectedItem?: any;
   municipalityId?: string;
   onBack: () => void;
   onNext: (data: RequestDetails) => void;
+  onSave?: (data: RequestDetails) => void;
 }
 
-export default function TemplateFields({ initialData, selectedItem, municipalityId, onBack, onNext }: TemplateFieldsProps) {
+export default function TemplateFields({ initialData, selectedItem, municipalityId, onBack, onNext, onSave }: TemplateFieldsProps) {
   const municipality = getMunicipalityById(municipalityId || AppConfig.municipalityId) || AppConfig.getMunicipality();
   const templateFields: TemplateFieldConfig[] = useMemo(() => {
     const pattern = Number(selectedItem?.pattern || 0);
@@ -29,8 +111,23 @@ export default function TemplateFields({ initialData, selectedItem, municipality
 
   useEffect(() => {
     if (!initialData) return;
-    setFormData({ additionalDetails: initialData.additionalDetails || '', fields: initialData.fields || {} });
+    const formFieldsEmpty = !formData.fields || Object.keys(formData.fields).length === 0;
+    const initialFieldsEmpty = !initialData.fields || Object.keys(initialData.fields).length === 0;
+    // Only initialize from initialData when local form is still empty to avoid overwriting user input
+    if (formFieldsEmpty && !initialFieldsEmpty) {
+      setFormData({ additionalDetails: initialData.additionalDetails || '', fields: initialData.fields || {} });
+    }
   }, [initialData]);
+
+  // Persist form data to parent when it changes (debounced to avoid frequent parent re-renders)
+  useEffect(() => {
+    if (typeof onSave !== 'function') return;
+    let active = true;
+    const timer = setTimeout(() => {
+      if (active) onSave(formData);
+    }, 300);
+    return () => { active = false; clearTimeout(timer); };
+  }, [formData, onSave]);
 
   const settlementField = templateFields.find((f) => f.dataSource === 'settlements');
   const streetField = templateFields.find((f) => f.dataSource === 'streets');
@@ -44,6 +141,7 @@ export default function TemplateFields({ initialData, selectedItem, municipality
   const [loadingSettlements, setLoadingSettlements] = useState(false);
   const [loadingStreets, setLoadingStreets] = useState(false);
   const [loadingAppealReasons, setLoadingAppealReasons] = useState(false);
+  const [error, setError] = useState<string>('');
   const lastStreetsRashutId = useRef<string | null>(null);
 
   const getSettlement = (settlementId: string) => settlementOptions.find((opt) => opt.id === settlementId);
@@ -216,74 +314,8 @@ export default function TemplateFields({ initialData, selectedItem, municipality
     }
   };
 
-  const SelectField = ({ value, onChange, options, placeholder = 'בחר', disabled = false }: { value: string; onChange: (next: string) => void; options: { value: string; label: string; disabled?: boolean }[]; placeholder?: string; disabled?: boolean; }) => {
-    const [open, setOpen] = useState(false);
-    const [highlightedIndex, setHighlightedIndex] = useState(-1);
-    const wrapperRef = useRef<HTMLDivElement | null>(null);
-    const listRef = useRef<HTMLDivElement | null>(null);
-    const optionRefs = useRef<Record<number, HTMLDivElement | null>>({});
-    const searchRef = useRef<{ value: string; timeout?: number }>({ value: '' });
+  
 
-    useEffect(() => {
-      if (!open) return;
-      const handleClick = (event: MouseEvent) => { if (!wrapperRef.current?.contains(event.target as Node)) setOpen(false); };
-      document.addEventListener('mousedown', handleClick);
-      return () => document.removeEventListener('mousedown', handleClick);
-    }, [open]);
-
-    useEffect(() => { if (!open) return; const selectedIndex = options.findIndex((opt) => opt.value === value); setHighlightedIndex(selectedIndex); }, [open, options, value]);
-
-    useEffect(() => {
-      if (!open || highlightedIndex < 0) return;
-      const el = optionRefs.current[highlightedIndex];
-      if (el && listRef.current) {
-        const { top, bottom } = el.getBoundingClientRect();
-        const listRect = listRef.current.getBoundingClientRect();
-        if (top < listRect.top || bottom > listRect.bottom) el.scrollIntoView({ block: 'nearest' });
-      }
-    }, [open, highlightedIndex]);
-
-    const selectedLabel = options.find((opt) => opt.value === value)?.label || '';
-    const enabledIndexes = options.map((opt, idx) => (opt.disabled ? -1 : idx)).filter((idx) => idx !== -1);
-    const moveHighlight = (direction: 1 | -1) => {
-      if (enabledIndexes.length === 0) return;
-      const current = highlightedIndex; const currentPos = enabledIndexes.indexOf(current);
-      const nextPos = currentPos === -1 ? (direction === 1 ? 0 : enabledIndexes.length - 1) : (currentPos + direction + enabledIndexes.length) % enabledIndexes.length;
-      setHighlightedIndex(enabledIndexes[nextPos]);
-    };
-
-    const handleTypeahead = (char: string) => {
-      const nextValue = `${searchRef.current.value}${char}`;
-      searchRef.current.value = nextValue;
-      if (searchRef.current.timeout) window.clearTimeout(searchRef.current.timeout);
-      searchRef.current.timeout = window.setTimeout(() => { searchRef.current.value = ''; }, 500);
-      const lower = nextValue.toLowerCase();
-      const matchIndex = options.findIndex((opt) => !opt.disabled && opt.label.toLowerCase().startsWith(lower));
-      if (matchIndex !== -1) setHighlightedIndex(matchIndex);
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
-      if (disabled) return;
-      if (e.key === 'ArrowDown') { e.preventDefault(); if (!open) setOpen(true); moveHighlight(1); return; }
-      if (e.key === 'ArrowUp') { e.preventDefault(); if (!open) setOpen(true); moveHighlight(-1); return; }
-      if (e.key === 'Enter') { if (open && highlightedIndex >= 0) { e.preventDefault(); const opt = options[highlightedIndex]; if (opt && !opt.disabled) { onChange(opt.value); setOpen(false); } } return; }
-      if (e.key === 'Escape') { if (open) { e.preventDefault(); setOpen(false); } return; }
-      if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) { if (!open) setOpen(true); handleTypeahead(e.key); }
-    };
-
-    return (
-      <div ref={wrapperRef} style={{ position: 'relative', width: '100%' }}>
-        <button type="button" disabled={disabled} onClick={() => setOpen((prev) => !prev)} onKeyDown={handleKeyDown} style={{ width: '100%', padding: '12px 40px 12px 12px', fontSize: '16px', border: '2px solid #ddd', borderRadius: '25px', textAlign: 'right', backgroundColor: disabled ? '#f5f5f5' : '#fff', color: disabled ? '#999' : '#333', cursor: disabled ? 'not-allowed' : 'pointer', outline: 'none', position: 'relative' }} onFocus={(e) => (e.currentTarget.style.borderColor = '#6a1b9a')} onBlur={(e) => (e.currentTarget.style.borderColor = '#ddd')}>{selectedLabel || placeholder}<span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: '#666', pointerEvents: 'none', fontSize: '12px' }}>▼</span></button>
-        {open && !disabled && (
-          <div ref={listRef} style={{ position: 'absolute', top: '100%', right: 0, left: 0, marginTop: '6px', backgroundColor: '#fff', border: '1px solid #ddd', borderRadius: '18px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', maxHeight: '260px', overflowY: 'auto', zIndex: 10 }}>
-            {options.map((opt, idx) => (
-              <div key={`${opt.value}-${idx}`} ref={(el) => { optionRefs.current[idx] = el; }} onClick={() => { if (opt.disabled) return; onChange(opt.value); setOpen(false); }} onMouseEnter={() => setHighlightedIndex(idx)} style={{ padding: '10px 16px', cursor: opt.disabled ? 'not-allowed' : 'pointer', color: opt.disabled ? '#999' : '#333', backgroundColor: idx === highlightedIndex ? '#f3e5f5' : 'transparent', borderBottom: idx === options.length - 1 ? 'none' : '1px solid #eee' }}>{opt.label}</div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
 
   const renderField = (field: TemplateFieldConfig, options?: { compact?: boolean; maxWidth?: string; marginTop?: string }) => {
     if (!field.visible) return null;
@@ -381,6 +413,32 @@ export default function TemplateFields({ initialData, selectedItem, municipality
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Validate required fields
+    const missing: string[] = [];
+    templateFields.forEach((f) => {
+      if (!f.visible || !f.required) return;
+      const val = formData.fields?.[f.name];
+      if (f.type === 'checkbox') {
+        if (val !== true) missing.push(f.label);
+      } else {
+        if (val === undefined || val === null || String(val).trim() === '' || String(val) === '__loading__') {
+          missing.push(f.label);
+        }
+        if (f.validation?.minLength && typeof val === 'string' && val.trim().length < (f.validation.minLength || 0)) {
+          missing.push(f.label + ` (מינימום ${f.validation.minLength})`);
+        }
+      }
+    });
+
+    if (missing.length > 0) {
+      setError('יש למלא שדות חובה: ' + Array.from(new Set(missing)).join(', '));
+      // scroll to top of the form to show the error
+      const el = document.querySelector('[dir="rtl"] form');
+      if (el) (el as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    setError('');
     onNext({ additionalDetails: '', fields: formData.fields });
   };
 
@@ -389,6 +447,9 @@ export default function TemplateFields({ initialData, selectedItem, municipality
   return (
     <div dir="rtl" lang="he" style={{ padding: '10px 12px 20px', width: '100%', boxSizing: 'border-box', margin: 0 }}>
       <form onSubmit={handleSubmit}>
+        {error && (
+          <div style={{ backgroundColor: '#ffebee', color: '#c62828', padding: '12px', borderRadius: '6px', marginBottom: '16px', border: '1px solid #ffcdd2', textAlign: 'center', fontWeight: 'bold' }}>{error}</div>
+        )}
         <div style={{ marginBottom: '24px' }}>
           {otherFields.map((field) => renderField(field, { compact: true, maxWidth: ['isVehicleOwner', 'cmbSibatIrur'].includes(field.name) ? '780px' : undefined, marginTop: field.name === 'cmbSibatIrur' ? '6px' : undefined }))}
           {addressFields.length > 0 && (

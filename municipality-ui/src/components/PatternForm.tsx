@@ -7,9 +7,10 @@ interface PatternFormProps {
   municipalityId?: string;
   onBack: () => void;
   onNext: (data: RequestDetails) => void;
+  onSave?: (data: RequestDetails) => void;
 }
 
-export default function PatternForm({ initialData, selectedItem, municipalityId, onBack, onNext }: PatternFormProps) {
+export default function PatternForm({ initialData, selectedItem, municipalityId, onBack, onNext, onSave }: PatternFormProps) {
   return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
       {/* Render template description above the template fields */}
@@ -28,6 +29,7 @@ export default function PatternForm({ initialData, selectedItem, municipalityId,
           municipalityId={municipalityId}
           onBack={onBack}
           onNext={onNext}
+          onSave={onSave}
         />
       </div>
     </div>
