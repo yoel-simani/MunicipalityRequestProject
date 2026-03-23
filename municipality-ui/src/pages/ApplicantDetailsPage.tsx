@@ -1,5 +1,4 @@
-import React from 'react';
-import ApplicantDetailsForm, { ApplicantDetails } from '../components/ApplicantDetailsForm';
+import ApplicantDetailsForm, { type ApplicantDetails } from '../components/ApplicantDetailsForm';
 
 export default function ApplicantDetailsPage() {
   const handleBack = () => {

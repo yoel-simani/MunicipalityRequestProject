@@ -1,4 +1,3 @@
-import React from 'react';
 import { AppConfig } from '../config/appConfig';
 
 export default function MunicipalityLogo() {

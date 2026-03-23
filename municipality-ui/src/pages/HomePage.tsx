@@ -7,6 +7,7 @@ import MenuWidget from "../components/Menu/MenuWidget";
 import IdentificationForm from "../components/IdentificationForm";
 import ApplicantDetailsForm from "../components/ApplicantDetailsForm";
 import RequestDetailsForm from "../components/RequestDetailsForm";
+import PatternForm from "../components/PatternForm";
 import AttachmentsForm from "../components/AttachmentsForm";
 import DeclarationForm from "../components/DeclarationForm";
 import PageLayout from "../components/PageLayout";
@@ -449,53 +450,31 @@ export default function HomePage() {
             ) : (
               <div style={{ textAlign: 'center', padding: '40px' }}>
                 {/* inline logo removed per request */}
-                {selectedItem && selectedItem.teurPattern ? (
-                  <div style={{ marginTop: '20px', textAlign: 'right', maxWidth: '800px', margin: '20px auto', fontSize: '16px', lineHeight: '1.6' }}>
-                    <div dangerouslySetInnerHTML={{ __html: selectedItem.teurPattern }} />
-                  </div>
-                ) : (
-                  <p>אין תיאור זמין עבור תבנית זו</p>
-                )}
-
-                {/* Render template-specific fields here so they appear in Step 4 (תיאור התבנית) */}
                 {municipality && (
-                  <div style={{ marginTop: '20px' }}>
-                    <RequestDetailsForm
-                      initialData={requestDetailsData}
-                      selectedItem={selectedItem}
-                      municipalityId={municipalityId}
-                      showFields={true}
-                      showAdditionalDetails={false}
-                      onBack={() => setCurrentView('applicantDetails')}
-                      onNext={(data) => {
-                        setRequestDetailsData({
-                          additionalDetails: requestDetailsData?.additionalDetails || '',
-                          selectedTav: requestDetailsData?.selectedTav,
-                          fields: data.fields
-                        });
-                        setCurrentView('requestDetails');
-                      }}
-                    />
-                  </div>
+                  <PatternForm
+                    initialData={requestDetailsData}
+                    selectedItem={selectedItem}
+                    municipalityId={municipalityId}
+                    onBack={() => setCurrentView('applicantDetails')}
+                    onNext={(data) => {
+                      setRequestDetailsData({
+                        additionalDetails: requestDetailsData?.additionalDetails || '',
+                        selectedTav: requestDetailsData?.selectedTav,
+                        fields: data.fields
+                      });
+                      setCurrentView('requestDetails');
+                    }}
+                  />
                 )}
               </div>
             )
           ) : currentView === 'requestDetails' ? (
             <div style={{ textAlign: 'center', padding: '40px' }}>
               {/* inline logo removed per request */}
-              {selectedItem && selectedItem.teurPattern && (
-                <div style={{ marginTop: '20px', textAlign: 'right', maxWidth: '800px', margin: '20px auto', fontSize: '16px', lineHeight: '1.6' }}>
-                  <div dangerouslySetInnerHTML={{ __html: selectedItem.teurPattern }} />
-                </div>
-              )}
+              {/* pattern preview removed on Request Details page */}
 
               <div style={{ marginTop: '20px' }}>
                 <RequestDetailsForm
-                  initialData={requestDetailsData}
-                  selectedItem={selectedItem}
-                  municipalityId={municipalityId}
-                  showFields={!isPattern12}
-                  showAdditionalDetails={true}
                   requireAdditionalDetails={isPattern12}
                   onBack={() => setCurrentView('templateDescription')}
                   onNext={(data) => {
