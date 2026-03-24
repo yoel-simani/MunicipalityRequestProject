@@ -11,18 +11,11 @@ interface PatternFormProps {
 }
 
 export default function PatternForm({ initialData, selectedItem, municipalityId, onBack, onNext, onSave }: PatternFormProps) {
+  // Inline removal of heading tags will be done directly when rendering the description.
+
   return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
-      {/* Render template description above the template fields */}
-      {selectedItem && selectedItem.teurPattern ? (
-        <div style={{ marginTop: '20px', textAlign: 'right', maxWidth: '800px', margin: '20px auto', fontSize: '16px', lineHeight: '1.6' }}>
-          <div dangerouslySetInnerHTML={{ __html: selectedItem.teurPattern }} />
-        </div>
-      ) : (
-        <p>אין תיאור זמין עבור תבנית זו</p>
-      )}
-
-      <div style={{ marginTop: '20px' }}>
+      <div style={{ marginTop: '-20px' }}>
         <TemplateFields
           initialData={initialData}
           selectedItem={selectedItem}

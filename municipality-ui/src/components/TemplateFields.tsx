@@ -102,10 +102,12 @@ interface TemplateFieldsProps {
 
 export default function TemplateFields({ initialData, selectedItem, municipalityId, onBack, onNext, onSave }: TemplateFieldsProps) {
   const municipality = getMunicipalityById(municipalityId || AppConfig.municipalityId) || AppConfig.getMunicipality();
+  const pattern = Number(selectedItem?.pattern || 0);
   const templateFields: TemplateFieldConfig[] = useMemo(() => {
-    const pattern = Number(selectedItem?.pattern || 0);
     return municipality.templateConfig?.templates?.[pattern]?.fields || [];
-  }, [municipality.templateConfig, selectedItem?.pattern]);
+  }, [municipality.templateConfig, pattern]);
+
+  const templateTitle = municipality.templateConfig?.templates?.[pattern]?.name || '';
 
   const [formData, setFormData] = useState<RequestDetails>({ additionalDetails: '', fields: initialData?.fields || {} });
 
@@ -471,25 +473,28 @@ export default function TemplateFields({ initialData, selectedItem, municipality
   return (
     <div dir="rtl" lang="he" style={{ padding: '10px 12px 20px', width: '100%', boxSizing: 'border-box', margin: 0, fontFamily: 'Arial, sans-serif' }}>
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '24px' }}>
-          {otherFields.map((field) => renderField(field, { compact: true, maxWidth: ['isVehicleOwner', 'cmbSibatIrur'].includes(field.name) ? '780px' : undefined, marginTop: field.name === 'cmbSibatIrur' ? '6px' : undefined }))}
-          {addressFields.length > 0 && (
-            <div style={{ marginTop: '32px', marginBottom: '10px' }}>
-              <div style={{ marginBottom: '14px', fontSize: '16px', fontWeight: 'bold', color: '#333', textAlign: 'right' }}>כתובת למשלוח תשובה</div>
-              <div style={{ display: 'grid', gridTemplateColumns: '360px 410px', columnGap: '8px', rowGap: '14px', marginBottom: '14px', justifyItems: 'start', width: 'fit-content', maxWidth: '100%' }}>
-                {renderAddressField(addressFieldMap.ddlYeshuv)}
-                {renderAddressField(addressFieldMap.ddlRechov)}
+        <div style={{ width: '820px', margin: '0 auto', textAlign: 'right', marginTop: '-40px' }}>
+          <div style={{ marginBottom: '24px', marginTop: 0 }}>
+            <h2 style={{ textAlign: 'center', marginTop: 0, marginBottom: '20px', fontSize: '18px', fontWeight: 'bold', fontFamily: 'Arial, sans-serif' }}>{templateTitle || 'פרטי הבקשה'}</h2>
+            {otherFields.map((field) => renderField(field, { compact: true, maxWidth: ['isVehicleOwner', 'cmbSibatIrur'].includes(field.name) ? '780px' : undefined, marginTop: field.name === 'cmbSibatIrur' ? '6px' : undefined }))}
+            {addressFields.length > 0 && (
+              <div style={{ marginTop: '32px', marginBottom: '10px' }}>
+                <div style={{ marginBottom: '14px', fontSize: '16px', fontWeight: 'bold', color: '#333', textAlign: 'right' }}>כתובת למשלוח תשובה</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '360px 410px', columnGap: '8px', rowGap: '14px', marginBottom: '14px', justifyItems: 'start', width: 'fit-content', maxWidth: '100%' }}>
+                  {renderAddressField(addressFieldMap.ddlYeshuv)}
+                  {renderAddressField(addressFieldMap.ddlRechov)}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 220px)', columnGap: '48px', rowGap: '18px' }}>
+                  {renderAddressField(addressFieldMap.txtMikud, '220px')}
+                  {renderAddressField(addressFieldMap.txtTeDoar, '220px')}
+                  {renderAddressField(addressFieldMap.txtKnisa, '220px')}
+                  {renderAddressField(addressFieldMap.txtMisparBayit, '220px')}
+                  {renderAddressField(addressFieldMap.txtMisparDira, '220px')}
+                  {renderAddressField(addressFieldMap.txtOtBayit, '220px')}
+                </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 220px)', columnGap: '48px', rowGap: '18px' }}>
-                {renderAddressField(addressFieldMap.txtMikud, '220px')}
-                {renderAddressField(addressFieldMap.txtTeDoar, '220px')}
-                {renderAddressField(addressFieldMap.txtKnisa, '220px')}
-                {renderAddressField(addressFieldMap.txtMisparBayit, '220px')}
-                {renderAddressField(addressFieldMap.txtMisparDira, '220px')}
-                {renderAddressField(addressFieldMap.txtOtBayit, '220px')}
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', alignItems: 'center', marginTop: '32px' }}>
