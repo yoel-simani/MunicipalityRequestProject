@@ -20,6 +20,7 @@ interface PageLayoutProps {
 
 export default function PageLayout({ children, currentStep, showStepper = true, teurPatternLabel, selectedTemplateName, isSuccess = false }: PageLayoutProps) {
   const municipality = AppConfig.getMunicipality();
+  const cleanedPatternHtml = '';
   const steps: Step[] = [
     {
       id: 1,
@@ -92,7 +93,7 @@ export default function PageLayout({ children, currentStep, showStepper = true, 
         <div style={{
           display: 'flex',
           flexDirection: 'row',
-          gap: '150px',
+          gap: currentStep === 3 ? '87px' : '150px',
           flex: 1,
           height: '100%',
           backgroundColor: '#fff'

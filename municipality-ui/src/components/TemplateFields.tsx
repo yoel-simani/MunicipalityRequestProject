@@ -468,21 +468,25 @@ export default function TemplateFields({ initialData, selectedItem, municipality
     onNext({ additionalDetails: '', fields: formData.fields });
   };
 
-  const renderAddressField = (field?: TemplateFieldConfig, maxWidth?: string) => field ? (<div style={{ minWidth: 0, width: '100%', maxWidth: maxWidth || 'none' }}>{renderField(field)}</div>) : null;
+  const renderAddressField = (field?: TemplateFieldConfig, maxWidth?: string) => field ?
+   (<div style={{ minWidth: 0, width: '100%', maxWidth: maxWidth || 'none' }}>{renderField(field)}</div>) 
+   : null;
 
   return (
     <div dir="rtl" lang="he" style={{ padding: '10px 12px 20px', width: '100%', boxSizing: 'border-box', margin: 0, fontFamily: 'Arial, sans-serif' }}>
       <form onSubmit={handleSubmit}>
-        <div style={{ width: '820px', margin: '0 auto', textAlign: 'right', marginTop: '-40px' }}>
-          <div style={{ marginBottom: '24px', marginTop: 0 }}>
+        <div style={{ width: '890px', margin: '0 auto', textAlign: 'right', marginTop: '-40px' }}>
+          <div style={{ marginBottom: '-4px', marginTop: 0 }}>
             <h2 style={{ textAlign: 'center', marginTop: 0, marginBottom: '20px', fontSize: '18px', fontWeight: 'bold', fontFamily: 'Arial, sans-serif' }}>{templateTitle || 'פרטי הבקשה'}</h2>
-            {otherFields.map((field) => renderField(field, { compact: true, maxWidth: ['isVehicleOwner', 'cmbSibatIrur'].includes(field.name) ? '780px' : undefined, marginTop: field.name === 'cmbSibatIrur' ? '6px' : undefined }))}
+            {otherFields.map((field) => 
+                renderField(field, { compact: true, maxWidth: ['isVehicleOwner', 'cmbSibatIrur'].includes(field.name) ?
+                 '780px' : undefined, marginTop: field.name === 'cmbSibatIrur' ? '6px' : undefined }))}
             {addressFields.length > 0 && (
-              <div style={{ marginTop: '32px', marginBottom: '10px' }}>
-                <div style={{ marginBottom: '14px', fontSize: '16px', fontWeight: 'bold', color: '#333', textAlign: 'right' }}>כתובת למשלוח תשובה</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '360px 410px', columnGap: '8px', rowGap: '14px', marginBottom: '14px', justifyItems: 'start', width: 'fit-content', maxWidth: '100%' }}>
-                  {renderAddressField(addressFieldMap.ddlYeshuv)}
-                  {renderAddressField(addressFieldMap.ddlRechov)}
+              <div style={{ marginTop: '15px', marginBottom: '10px' }}>
+                <div style={{ marginBottom: '4px', fontSize: '16px', fontWeight: 'bold', color: '#333', textAlign: 'right' }}>כתובת למשלוח תשובה</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '385px 410px', columnGap: '8px', rowGap: '14px', marginBottom: '14px', justifyItems: 'start', width: 'fit-content', maxWidth: '100%' }}>
+                  {renderAddressField(addressFieldMap.ddlYeshuv, '385px')}
+                  {renderAddressField(addressFieldMap.ddlRechov, '385px')}
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 220px)', columnGap: '48px', rowGap: '18px' }}>
                   {renderAddressField(addressFieldMap.txtMikud, '220px')}

@@ -14,7 +14,7 @@ export default function PatternForm({ initialData, selectedItem, municipalityId,
   // Inline removal of heading tags will be done directly when rendering the description.
 
   return (
-    <div style={{ textAlign: 'center', padding: '20px' }}>
+    <div style={{width: '820px', textAlign: 'center', padding: '20px' }}>
       <div style={{ marginTop: '-20px' }}>
         <TemplateFields
           initialData={initialData}
