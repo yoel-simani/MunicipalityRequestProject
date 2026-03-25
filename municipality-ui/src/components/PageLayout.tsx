@@ -20,7 +20,7 @@ interface PageLayoutProps {
 
 export default function PageLayout({ children, currentStep, showStepper = true, teurPatternLabel, selectedTemplateName, isSuccess = false }: PageLayoutProps) {
   const municipality = AppConfig.getMunicipality();
-  const cleanedPatternHtml = '';
+  
   const steps: Step[] = [
     {
       id: 1,

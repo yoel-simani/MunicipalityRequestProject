@@ -132,11 +132,15 @@ export const defaultMunicipalityConfig: MunicipalityConfig = {
           },
           {
             name: 'ext12_RBMailDoar',
-            label: 'מאשר קבלת תשובה במייל בלבד',
-            type: 'checkbox',
+            label: 'אופן קבלת התשובה (לתשומת ליבך,תשובה שתשלח בדואר אלקטרוני לא תשלח בדואר ישראל)',
+            type: 'select',
             required: false,
             visible: true,
-            defaultValue: true,
+            options: [
+              { value: 'mail', label: 'דואר אלקטרוני' },
+              { value: 'post', label: 'דואר ישראל' },
+            ],
+            defaultValue: 'mail',
           },
         ],
         requiredAttachments: ['צילום הדוח'],

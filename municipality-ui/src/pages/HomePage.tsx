@@ -573,8 +573,8 @@ export default function HomePage() {
           ) : (
             <div style={{ 
               textAlign: 'center', 
-              padding: '40px',
-              direction: 'rtl' 
+              padding: '10px',
+              direction: 'rtl', marginTop: '100px'  
             }}>
               {processId ? (
                 <>
@@ -589,7 +589,7 @@ export default function HomePage() {
                   }}>
                     ✓ נפתחה פניה מספר {processId}
                   </div>
-                  <p style={{ fontSize: '18px', marginBottom: '30px' }}>
+                  <p style={{ fontSize: '20px', marginBottom: '30px' }}>
                     הפניה שלך נקלטה בהצלחה במערכת
                   </p>
                 </>

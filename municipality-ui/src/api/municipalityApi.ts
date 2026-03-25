@@ -508,7 +508,7 @@ export async function launchProcess(
     'ext12_RBOwnerCarToPDF',
     'ext12_RBMailDoar',
     'ext12_RBMailDoarToPDF',
-    'ext12_TextAreaParking',
+    // removed: 'ext12_TextAreaParking' per request
     'ext12_nameRashutToSend',
     'ext12_nameRashutToPDF',
     'ext12_StreetNameToPDF',
@@ -519,7 +519,11 @@ export async function launchProcess(
     'ext12_TxtDiraNum',
     'ext12_TxtdocGroup12',
     'ext12_txtAppaelChoice',
-    'ext12_houseLetter'
+    'ext12_houseLetter',
+    // add sending of the selected code field for legacy pd_ext12_DDLAppael
+    'pd_ext12_DDLAppael',
+    // new field to send explicit mail/post label for PDF
+    'pd_ext12_RBMailDoarToPDF'
   ]);
 
   const template62FieldNames = new Set([
@@ -718,12 +722,30 @@ export async function launchProcess(
               if (parsed === false) return 'בדואר';
               return '';
             }
-            case 'ext12_TextAreaParking':
-              return requestDetailsData?.additionalDetails || '';
+            case 'pd_ext12_RBMailDoarToPDF': {
+              // Send explicit label expected by downstream system.
+              // Prefer new select value `pd_ext12_RBMailDoarToPDF`, fall back to legacy fields.
+              const raw = legacyFields.pd_ext12_RBMailDoarToPDF ?? legacyFields.ext12_RBMailDoar ?? legacyFields.ext12_RBMailDoarToPDF ?? '';
+              const asStr = String(raw).trim();
+              const lower = asStr.toLowerCase();
+              if (asStr === 'mail' || lower === 'mail' || asStr === 'מייל' || asStr === 'במייל' || asStr === 'רק במייל' || asStr === 'true' || asStr === '1') {
+                return 'דואר אלקטרוני';
+              }
+              if (asStr === 'post' || lower === 'post' || asStr === 'בדואר' || asStr === 'false' || asStr === '0') {
+                return 'דואר ישראל';
+              }
+              // default to electronic
+              return 'דואר אלקטרוני';
+            }
+            // removed ext12_TextAreaParking per request - do not send description textarea
             case 'ext12_txtAppaelChoice':
+              // keep existing behavior for backward compatibility (text label)
               return getLabel('cmbSibatIrur') || legacyFields.cmbSibatIrur || '';
             case 'ext12_TxtdocGroup12':
               return legacyFields.cmbSibatIrur || '';
+            case 'pd_ext12_DDLAppael':
+              // send the code of the selected option (expected in pd_ext12_DDLAppael)
+              return legacyFields.pd_ext12_DDLAppael ?? legacyFields.cmbSibatIrur ?? '';
             case 'ext12_nameRashutToSend':
               return municipality.longCustomer || '';
             case 'ext12_nameRashutToPDF':
