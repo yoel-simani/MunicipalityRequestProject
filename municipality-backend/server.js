@@ -253,6 +253,20 @@ app.post("/api/soap", async (req, res) => {
     console.log('Body type:', typeof req.body);
     console.log('Body:', req.body ? (typeof req.body === 'string' ? req.body.substring(0, 200) + '...' : JSON.stringify(req.body).substring(0, 200)) : 'EMPTY');
     console.log('Headers:', JSON.stringify(req.headers, null, 2));
+
+    // Additional debug: if SOAP body contains template12 mail fields, log them explicitly
+    // try {
+    //   const bodyStr = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+    //   if (bodyStr.includes('ext12_RBMailDoarToPDF') || bodyStr.includes('ext12_RBMailDoar')) {
+    //     const matchPDF = bodyStr.match(/<lad:Name>ext12_RBMailDoarToPDF<\/lad:Name>\s*<lad:Value>([^<]*)<\/lad:Value>/);
+    //     const matchFlag = bodyStr.match(/<lad:Name>ext12_RBMailDoar<\/lad:Name>\s*<lad:Value>([^<]*)<\/lad:Value>/);
+    //     console.log('Detected template12 mail fields in SOAP body:');
+    //     if (matchPDF) console.log('ext12_RBMailDoarToPDF =', matchPDF[1]);
+    //     if (matchFlag) console.log('ext12_RBMailDoar =', matchFlag[1]);
+    //   }
+    // } catch (err) {
+    //   console.warn('Error parsing SOAP body for debug fields:', err);
+    // }
     
     // Check if client specified a custom SOAP endpoint
     const useAlternateUrl = req.headers['x-use-launch-url'] === 'true';

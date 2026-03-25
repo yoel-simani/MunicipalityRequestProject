@@ -33,10 +33,15 @@ export const municipality813510Overrides: MunicipalityOverrides = {
         fields: [
           {
             name: 'ext12_RBMailDoar',
-            label: 'מאשר קבלת תשובה במייל בלבד',
-            type: 'checkbox',
+            label: 'אופן קבלת התשובה (לתשומת ליבך,תשובה שתשלח בדואר אלקטרוני לא תשלח בדואר ישראל)',
+            type: 'select',
             required: false,
-            visible: false,
+            visible: true,
+            options: [
+              { value: '1', label: 'דואר אלקטרוני' },
+              { value: '0', label: 'דואר ישראל' },
+            ],
+            defaultValue: '1',
           },
         ],
       },

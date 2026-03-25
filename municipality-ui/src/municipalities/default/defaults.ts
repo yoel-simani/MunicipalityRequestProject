@@ -137,10 +137,10 @@ export const defaultMunicipalityConfig: MunicipalityConfig = {
             required: false,
             visible: true,
             options: [
-              { value: 'mail', label: 'דואר אלקטרוני' },
-              { value: 'post', label: 'דואר ישראל' },
+              { value: '1', label: 'דואר אלקטרוני' },
+              { value: '0', label: 'דואר ישראל' },
             ],
-            defaultValue: 'mail',
+            defaultValue: '1',
           },
         ],
         requiredAttachments: ['צילום הדוח'],

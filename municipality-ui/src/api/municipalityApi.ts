@@ -499,16 +499,14 @@ export async function launchProcess(
     'txtMisparDira',
     'txtKnisa',
     'txtTeDoar',
-    'txtMikud',
-    'pd_ext12_DDLAppael'
-  ]);
+    'txtMikud'
+   ]);
 
   const template12FieldNames = new Set([
     'ext12_RBOwnerCar',
     'ext12_RBOwnerCarToPDF',
     'ext12_RBMailDoar',
     'ext12_RBMailDoarToPDF',
-    // removed: 'ext12_TextAreaParking' per request
     'ext12_nameRashutToSend',
     'ext12_nameRashutToPDF',
     'ext12_StreetNameToPDF',
@@ -520,10 +518,7 @@ export async function launchProcess(
     'ext12_TxtdocGroup12',
     'ext12_txtAppaelChoice',
     'ext12_houseLetter',
-    // add sending of the selected code field for legacy pd_ext12_DDLAppael
-    'pd_ext12_DDLAppael',
-    // new field to send explicit mail/post label for PDF
-    'pd_ext12_RBMailDoarToPDF'
+    'ext12_DDLAppael'
   ]);
 
   const template62FieldNames = new Set([
@@ -684,17 +679,6 @@ export async function launchProcess(
         const valueByNewName = legacyFields[name];
         const getLabel = (fieldName: string) => legacyFields[`${fieldName}__label`] || '';
 
-        const parseMailDoarValue = (rawValue: unknown) => {
-          if (rawValue === true || rawValue === 'true' || rawValue === '1') return true;
-          if (rawValue === false || rawValue === 'false' || rawValue === '0') return false;
-          if (typeof rawValue === 'string') {
-            const normalized = rawValue.trim();
-            if (normalized === 'בדואר') return false;
-            if (normalized === 'רק במייל' || normalized === 'במייל' || normalized === 'מייל') return true;
-          }
-          return null;
-        };
-
         const mappedValue = (() => {
           switch (name) {
             case 'ext12_RBOwnerCar': {
@@ -708,24 +692,9 @@ export async function launchProcess(
             }
             case 'ext12_RBOwnerCarToPDF':
               return getLabel('isVehicleOwner') || legacyFields.isVehicleOwner || '';
-            case 'ext12_RBMailDoar': {
-              const raw = legacyFields.ext12_RBMailDoar ?? legacyFields.ext12_RBMailDoarToPDF;
-              const parsed = parseMailDoarValue(raw);
-              if (parsed === true) return '1';
-              if (parsed === false) return '0';
-              return '';
-            }
+
             case 'ext12_RBMailDoarToPDF': {
-              const raw = legacyFields.ext12_RBMailDoar ?? legacyFields.ext12_RBMailDoarToPDF;
-              const parsed = parseMailDoarValue(raw);
-              if (parsed === true) return 'רק במייל';
-              if (parsed === false) return 'בדואר';
-              return '';
-            }
-            case 'pd_ext12_RBMailDoarToPDF': {
-              // Send explicit label expected by downstream system.
-              // Prefer new select value `pd_ext12_RBMailDoarToPDF`, fall back to legacy fields.
-              const raw = legacyFields.pd_ext12_RBMailDoarToPDF ?? legacyFields.ext12_RBMailDoar ?? legacyFields.ext12_RBMailDoarToPDF ?? '';
+              const raw = legacyFields.ext12_RBMailDoarToPDF ?? legacyFields.ext12_RBMailDoar ?? legacyFields.ext12_RBMailDoarToPDF ?? '';
               const asStr = String(raw).trim();
               const lower = asStr.toLowerCase();
               if (asStr === 'mail' || lower === 'mail' || asStr === 'מייל' || asStr === 'במייל' || asStr === 'רק במייל' || asStr === 'true' || asStr === '1') {
@@ -734,18 +703,30 @@ export async function launchProcess(
               if (asStr === 'post' || lower === 'post' || asStr === 'בדואר' || asStr === 'false' || asStr === '0') {
                 return 'דואר ישראל';
               }
-              // default to electronic
               return 'דואר אלקטרוני';
             }
-            // removed ext12_TextAreaParking per request - do not send description textarea
-            case 'ext12_txtAppaelChoice':
-              // keep existing behavior for backward compatibility (text label)
+            case 'ext12_RBMailDoar': {
+              const raw = legacyFields.ext12_RBMailDoar ?? '';
+              const asStr = String(raw).trim();
+              const lower = asStr.toLowerCase();
+              if (asStr === 'mail' || lower === 'mail' || asStr === 'מייל' || asStr === 'במייל' || asStr === 'רק במייל' || asStr === 'true' || asStr === '1') return '1';
+              if (asStr === 'post' || lower === 'post' || asStr === 'בדואר' || asStr === 'false' || asStr === '0') return '0';
+
+              // Fallback: check the ToPDF label (may contain Hebrew 'דואר אלקטרוני'/'דואר ישראל')
+              const pdfRaw = legacyFields.ext12_RBMailDoarToPDF ?? '';
+              const pdfStr = String(pdfRaw).trim();
+              const pdfLower = pdfStr.toLowerCase();
+              if (pdfStr === 'דואר אלקטרוני' || pdfLower.includes('מייל') || pdfLower.includes('mail')) return '1';
+              if (pdfStr === 'דואר ישראל' || pdfLower.includes('בדואר') || pdfLower.includes('post')) return '0';
+
+              return '';
+            }
+           case 'ext12_txtAppaelChoice':
               return getLabel('cmbSibatIrur') || legacyFields.cmbSibatIrur || '';
             case 'ext12_TxtdocGroup12':
               return legacyFields.cmbSibatIrur || '';
-            case 'pd_ext12_DDLAppael':
-              // send the code of the selected option (expected in pd_ext12_DDLAppael)
-              return legacyFields.pd_ext12_DDLAppael ?? legacyFields.cmbSibatIrur ?? '';
+            case 'ext12_DDLAppael':
+              return legacyFields.ext12_DDLAppael ?? legacyFields.cmbSibatIrur ?? '';
             case 'ext12_nameRashutToSend':
               return municipality.longCustomer || '';
             case 'ext12_nameRashutToPDF':
@@ -768,10 +749,7 @@ export async function launchProcess(
               return '';
           }
         })();
-
-        const value = name === 'ext12_RBMailDoar' || name === 'ext12_RBMailDoarToPDF'
-          ? (mappedValue ?? valueByNewName ?? '')
-          : (valueByNewName ?? mappedValue ?? '');
+        const value = valueByNewName ?? mappedValue ?? '';
         return `<lad:Item><lad:Name>${name}</lad:Name><lad:Value>${escapeXml(String(value))}</lad:Value></lad:Item>`;
       })
     : [];
